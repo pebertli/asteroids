@@ -4,7 +4,7 @@ Shader "Unlit/BackgroundShader"
 	{
 		_MainTex("Texture", 2D) = "white" {}
 		_Color("Tint", Color) = (1, 1, 1, 1)
-		_Speed("Speed", Range(0, 2)) = 0.0
+		_Speed("Speed", Vector) = (0, 0, 0, 0)
 	}
 		SubShader
 		{
@@ -37,7 +37,7 @@ Shader "Unlit/BackgroundShader"
 				sampler2D _MainTex;
 				fixed4 _Color;
 				float4 _MainTex_ST;
-				half _Speed;
+				fixed4 _Speed;
 
 				v2f vert(appdata v)
 				{
@@ -51,7 +51,7 @@ Shader "Unlit/BackgroundShader"
 				fixed4 frag(v2f i) : SV_Target
 				{
 					// sample the texture
-					float2 scroll = float2(0, frac(_Time.y * _Speed));
+					float2 scroll = float2(frac(_Time.y * _Speed.x), frac(_Time.y * _Speed.y));
 					fixed4 col = tex2D(_MainTex, i.uv - scroll) * _Color;
 					// apply fog
 					UNITY_APPLY_FOG(i.fogCoord, col);
