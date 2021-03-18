@@ -51,13 +51,14 @@ Shader "Unlit/BackgroundShader"
 				fixed4 frag(v2f i) : SV_Target
 				{
 					// sample the texture
-					float2 scroll = float2(0, frac(_Time.y * _Speed));
-					fixed4 col = tex2D(_MainTex, i.uv - scroll) * _Color;
-					// apply fog
-					UNITY_APPLY_FOG(i.fogCoord, col);
-					return col;
-				}
-				ENDCG
+					//float2 scroll = float2(0, frac(_Time.y * _Speed));
+					//fixed4 col = tex2D(_MainTex, i.uv - scroll) * _Color;
+					fixed4 col = tex2D(_MainTex, i.uv) * _Color;
+				// apply fog
+				UNITY_APPLY_FOG(i.fogCoord, col);
+				return col;
 			}
+			ENDCG
+		}
 		}
 }
