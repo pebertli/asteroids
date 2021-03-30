@@ -1,15 +1,14 @@
 using UnityEngine;
 
-public class AsteroidSpawn : MonoBehaviour
+public class AsteroidSpawnController : MonoBehaviour
 {
 
     public GameObject AsteroidPrefab;
     public Transform LeftUp;
     public Transform RightBottom;
     public float CooldownSpawnMax;
-    public const int SpawnMax = 10;
-
-    private static int CurrentSpawnedAmmount;
+    public Transform SpawnParent;
+    public GameVariables Variables;
 
     float CooldownSpawn;
 
@@ -19,7 +18,17 @@ public class AsteroidSpawn : MonoBehaviour
         CooldownSpawn = CooldownSpawnMax;
     }
 
-    private void Spawn(float scale)
+    private void OnEnable()
+    {
+        EventManager.StartListening("AsteroidDestroyed", AsteroidDestroyed);
+    }
+
+    private void OnDisable()
+    {
+        EventManager.StopListening("AsteroidDestroyed", AsteroidDestroyed);
+    }
+
+    private void RandomOnScreenBoundary()
     {
         int normalizedPos = Random.Range(0, 4);
         Vector3 SpawnPos = Vector3.zero;
@@ -43,43 +52,34 @@ public class AsteroidSpawn : MonoBehaviour
                 Direction = Vector3.up;
                 break;
         }
-        GameObject asteroid = Instantiate(AsteroidPrefab, SpawnPos, Random.rotation);
-        asteroid.GetComponent<Rigidbody>().AddForce(Direction * Random.Range(70, 200), ForceMode.Acceleration);
-        asteroid.GetComponent<Rigidbody>().AddTorque(Random.insideUnitCircle * Random.Range(70, 200), ForceMode.Acceleration);
 
-        if (scale > 0.75f)
-            asteroid.GetComponent<AsteroidController>().AsteroidSize = 1;
-        else
-            asteroid.GetComponent<AsteroidController>().AsteroidSize = 0;
-        asteroid.transform.localScale = new Vector3(scale, scale, scale);
-
-        CurrentSpawnedAmmount++;
+        Spawn(AsteroidPrefab, SpawnPos, Direction * Random.Range(70, 200), Random.Range(0.3f, 1.0f));
     }
 
-    private void Spawn(Vector3 position, float scale)
+    private void Spawn(GameObject prefab, Vector3 position, Vector3 direction, float scale)
     {
-        GameObject asteroid = Instantiate(AsteroidPrefab, position, Random.rotation);
-        asteroid.GetComponent<Rigidbody>().AddForce(Random.insideUnitCircle * Random.Range(70, 200), ForceMode.Acceleration);
+        GameObject asteroid = Instantiate(prefab, position, Random.rotation, SpawnParent);
+        asteroid.GetComponent<Rigidbody>().AddForce(direction, ForceMode.Acceleration);
         asteroid.GetComponent<Rigidbody>().AddTorque(Random.insideUnitCircle * Random.Range(70, 200), ForceMode.Acceleration);
-
-        asteroid.GetComponent<AsteroidController>().AsteroidSize = 0;
         asteroid.transform.localScale = new Vector3(scale, scale, scale);
 
-        CurrentSpawnedAmmount++;
     }
 
-    public void AsteroidDestroyed(Vector3 position, int asteroidSize)
+    public void DestroyAllAsteroids()
     {
-        if (asteroidSize >= 1)
+        foreach (Transform c in SpawnParent)
+            Destroy(c.gameObject);
+
+        Variables.AsteroidAmount = 0;
+    }
+
+    public void AsteroidDestroyed(GameObject asteroidDestroid)
+    {
+        if (asteroidDestroid.transform.localScale.x >= 0.3f)
         {
-            Spawn(position, Random.Range(0.1f, 0.3f));
-            Spawn(position, Random.Range(0.1f, 0.3f));
-            Spawn(position, Random.Range(0.1f, 0.3f));
-        }
-        else
-        {
-            Spawn(position, Random.Range(0.1f, 0.3f));
-            Spawn(position, Random.Range(0.1f, 0.3f));
+            Spawn(AsteroidPrefab, asteroidDestroid.transform.position, Random.insideUnitCircle * Random.Range(70, 200), Random.Range(0.1f, 0.3f));
+            Spawn(AsteroidPrefab, asteroidDestroid.transform.position, Random.insideUnitCircle * Random.Range(70, 200), Random.Range(0.1f, 0.3f));
+            Spawn(AsteroidPrefab, asteroidDestroid.transform.position, Random.insideUnitCircle * Random.Range(70, 200), Random.Range(0.1f, 0.3f));
         }
 
     }
@@ -87,11 +87,11 @@ public class AsteroidSpawn : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (CooldownSpawn <= 0f)
+        if (CooldownSpawn <= 0f && Variables.AsteroidAmount < GameVariables.MaxAsteroidAmount)
         {
-            float scale = Random.Range(0.5f, 1f);
-            Spawn(scale);
+            RandomOnScreenBoundary();
             CooldownSpawn = CooldownSpawnMax;
+            Variables.AsteroidAmount++;
         }
         else
         {

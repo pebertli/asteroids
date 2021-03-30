@@ -18,12 +18,15 @@ public class ParallaxController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector2 offset = mMeshRenderer.material.mainTextureOffset;
+        if (mPlayerRB)
+        {
+            Vector2 offset = mMeshRenderer.material.mainTextureOffset;
 
-        offset.x += mPlayerRB.velocity.x / ParallaxFactor;
-        offset.y += mPlayerRB.velocity.y / ParallaxFactor;
+            offset.x += mPlayerRB.velocity.x / ParallaxFactor;
+            offset.y += mPlayerRB.velocity.y / ParallaxFactor;
 
-        mMeshRenderer.material.mainTextureOffset = offset;
+            mMeshRenderer.material.mainTextureOffset = offset;
+        }
 
 
     }

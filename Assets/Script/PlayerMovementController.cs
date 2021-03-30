@@ -1,13 +1,20 @@
+using System.Collections;
 using UnityEngine;
 
-public class MovementController : MonoBehaviour
+public class PlayerMovementController : MonoBehaviour
 {
     public float GasAmount;
+    public GameVariables Variables;
+    public GameManager Manager;
+    public MeshRenderer[] MaterialRocket;
 
     Camera mMainCamera;
     Rigidbody mRigidbody;
     float mThrottle;
     float mRotVelocity;
+
+    float InvencibleCooldown;
+    const float InvencibleTime = 3.0f;
 
     void Start()
     {
@@ -21,11 +28,84 @@ public class MovementController : MonoBehaviour
         mRigidbody.velocity = Vector3.ClampMagnitude(mRigidbody.velocity, 2);
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.CompareTag("Asteroid"))
+        {
+            if (InvencibleCooldown <= 0)
+                Damage();
+        }
+    }
+
+    void Damage()
+    {
+
+        EventManager.TriggerEvent("PlayerDestroyed", null);
+        if (Variables.Health <= 0)
+        {
+            //Destroy(this.gameObject);
+            Manager.SetGameState(GameVariables.GameState.GameOver);
+
+        }
+        else
+        {
+            Respawn(true);
+        }
+    }
+
+    public void Respawn(bool invencible)
+    {
+        transform.position = Vector3.zero;
+        transform.rotation = Quaternion.Euler(0, -180, 0);
+        mRigidbody.velocity = Vector3.zero;
+        mRigidbody.angularVelocity = Vector3.zero;
+        gameObject.SetActive(true);
+
+        SetInvencible(invencible);
+    }
+
+    void SetInvencible(bool enable)
+    {
+        if (enable)
+        {
+            StartCoroutine("Blink");
+            InvencibleCooldown = InvencibleTime;
+            gameObject.GetComponent<Collider>().enabled = false;
+        }
+        else
+        {
+            InvencibleCooldown = 0f;
+            gameObject.GetComponent<Collider>().enabled = true;
+        }
+    }
+
+    IEnumerator Blink()
+    {
+        for (int i = 0; i < 24; ++i)
+        {
+            foreach (var m in MaterialRocket)
+                m.enabled = !m.enabled;
+            for (float active = 0.0f; active < 0.125f; active += Time.deltaTime)
+            {
+                yield return null;
+            }
+        }
+
+        yield break;
+    }
+
     void Update()
     {
         Debug.DrawRay(transform.position, transform.up, Color.green);
         Debug.DrawRay(transform.position, transform.right, Color.red);
         Debug.DrawRay(transform.position, transform.forward, Color.blue);
+
+        if (InvencibleCooldown > 0)
+            InvencibleCooldown -= Time.deltaTime;
+        else
+        {
+            SetInvencible(false);
+        }
 
         if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey("w"))
         {

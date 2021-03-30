@@ -125,5 +125,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72f94295aff65874abf560b0fead32c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AsteroidSize: 0
-  AsteroidSpawn: {fileID: 5657223968146723954, guid: cacc3077b38eed041b08aac02e4fc568, type: 3}
+  Variables: {fileID: 11400000, guid: 675bdf6cc7f413b46a9be90f6828387d, type: 2}

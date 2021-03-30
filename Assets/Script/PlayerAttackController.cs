@@ -5,6 +5,7 @@ public class PlayerAttackController : MonoBehaviour
     public GameObject BulletPrefab;
     public Transform AttackPivot;
     public float BulletSpeed;
+    public GameVariables Manager;
     private const float BulletCooldownMax = 0.3f;
     private float BulletCooldown = BulletCooldownMax;
 
@@ -12,6 +13,21 @@ public class PlayerAttackController : MonoBehaviour
     void Start()
     {
 
+    }
+
+    private void OnEnable()
+    {
+        EventManager.StartListening("AsteroidDestroyed", AddScore);
+    }
+
+    private void OnDisable()
+    {
+        EventManager.StopListening("AsteroidDestroyed", AddScore);
+    }
+
+    public void AddScore(GameObject s)
+    {
+        Manager.Score += GameVariables.ScoreIncrement;
     }
 
     // Update is called once per frame
@@ -33,5 +49,14 @@ public class PlayerAttackController : MonoBehaviour
     {
         GameObject bullet = GameObject.Instantiate(BulletPrefab, AttackPivot.position, Quaternion.identity);
         bullet.GetComponent<Rigidbody>().AddForce(this.transform.up * BulletSpeed, ForceMode.Impulse);
+        //bullet.transform.localScale = Vector3.one;
+    }
+
+    public void DestroyAllBullets()
+    {
+        foreach (Transform c in AttackPivot)
+        {
+            Destroy(c.gameObject);
+        }
     }
 }
