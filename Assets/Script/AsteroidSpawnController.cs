@@ -10,12 +10,12 @@ public class AsteroidSpawnController : MonoBehaviour
     public Transform SpawnParent;
     public GameVariables Variables;
 
-    float CooldownSpawn;
+    private float mCooldownSpawn;
 
     // Start is called before the first frame update
     void Start()
     {
-        CooldownSpawn = CooldownSpawnMax;
+        mCooldownSpawn = CooldownSpawnMax;
     }
 
     private void OnEnable()
@@ -62,7 +62,6 @@ public class AsteroidSpawnController : MonoBehaviour
         asteroid.GetComponent<Rigidbody>().AddForce(direction, ForceMode.Acceleration);
         asteroid.GetComponent<Rigidbody>().AddTorque(Random.insideUnitCircle * Random.Range(70, 200), ForceMode.Acceleration);
         asteroid.transform.localScale = new Vector3(scale, scale, scale);
-
     }
 
     public void DestroyAllAsteroids()
@@ -87,15 +86,15 @@ public class AsteroidSpawnController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (CooldownSpawn <= 0f && Variables.AsteroidAmount < GameVariables.MaxAsteroidAmount)
+        if (mCooldownSpawn <= 0f && Variables.AsteroidAmount < GameVariables.MaxAsteroidAmount)
         {
             RandomOnScreenBoundary();
-            CooldownSpawn = CooldownSpawnMax;
+            mCooldownSpawn = CooldownSpawnMax;
             Variables.AsteroidAmount++;
         }
         else
         {
-            CooldownSpawn -= Time.deltaTime;
+            mCooldownSpawn -= Time.deltaTime;
         }
     }
 }

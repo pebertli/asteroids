@@ -3,7 +3,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public GameVariables Variables;
-    public PlayerMovementController Player;
+    public PlayerController Player;
     public MainMenuController MainMenu;
     public HealthController HealthHud;
     public AsteroidSpawnController AsteroidSpawnController;
@@ -61,10 +61,6 @@ public class GameManager : MonoBehaviour
                 MainMenu.Show(true);
                 //MainMenuController.Show();
                 break;
-            //case GameManagerVariables.GameState.Dead:
-            //    //if (ManagerVariables.Health <= 0)
-            //    //MainMenuController.Show();
-            //    break;
             default:
                 break;
         }

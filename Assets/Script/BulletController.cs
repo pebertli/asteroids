@@ -12,11 +12,6 @@ public class BulletController : MonoBehaviour
     {
         if (collision.collider.CompareTag("Asteroid"))
         {
-            //AsteroidController
-            //if (collision.collider.TryGetComponent())
-            //{
-            //    collision.collider.TryGetComponent<AsteroidController>().Damage();
-            //}
             Destroy(this.gameObject);
         }
     }

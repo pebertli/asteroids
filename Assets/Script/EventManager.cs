@@ -7,27 +7,25 @@ public class EventManager : MonoBehaviour
 
     public delegate void EventGameObject(GameObject sender);
     private Dictionary<string, EventGameObject> eventDictionary;
-    //private Dictionary<string, UnityEvent<GameObject>> eventDictionaryGameObject;
-
-    private static EventManager eventManager;
+    private static EventManager mEventManager;
 
     public static EventManager instance
     {
         get
         {
-            if (!eventManager)
+            if (!mEventManager)
             {
-                eventManager = FindObjectOfType(typeof(EventManager)) as EventManager;
+                mEventManager = FindObjectOfType(typeof(EventManager)) as EventManager;
             }
 
-            if (!eventManager)
+            if (!mEventManager)
                 Debug.LogError("No event Manager");
             else
             {
-                eventManager.Init();
+                mEventManager.Init();
             }
 
-            return eventManager;
+            return mEventManager;
         }
     }
 
@@ -37,123 +35,43 @@ public class EventManager : MonoBehaviour
         {
             eventDictionary = new Dictionary<string, EventGameObject>();
         }
-
-        //if (eventDictionaryGameObject == null)
-        //{
-        //    eventDictionaryGameObject = new Dictionary<string, UnityEvent<GameObject>>();
-        //}
     }
 
     public static void StartListening(string eventName, EventGameObject listener)
     {
-        //EventGameObject thisEvent;
-
-        //if (instance.eventDictionary.TryGetValue(eventName, out thisEvent))
-        //{
-        //    thisEvent += listener;
-        //}
-        //else
-        //{
-        //    var d = thisEvent + listener;
-        //    instance.eventDictionary.Add(eventName, d);
-        //    d += listener;
-        //}
-
-        //EventGameObject d;
-        //instance.eventDictionary.TryGetValue(eventName, out d);
-        //d = (EventGameObject)Delegate.Combine(d, listener);
-        //instance.eventDictionary[eventName] = d;
-        //Debug.Log(d.GetInvocationList().ToString());
-        //for (int ctr = d.GetInvocationList().Length - 1; ctr >= 0; ctr--)
-        //{
-        //    var outputMsg = d.GetInvocationList()[ctr];
-        //    Debug.Log(outputMsg.Method);
-        //}
-
-        EventGameObject d;
-        if (instance.eventDictionary.TryGetValue(eventName, out d))
+        EventGameObject delegateDictionary;
+        if (instance.eventDictionary.TryGetValue(eventName, out delegateDictionary))
         {
-            d += listener;
+            delegateDictionary += listener;
         }
         else
         {
-            d = new EventGameObject(listener);
+            delegateDictionary = new EventGameObject(listener);
         }
-        instance.eventDictionary[eventName] = d;
-        //d = (EventGameObject)Delegate.Combine(d, listener);
-        //instance.eventDictionary[eventName] = d;
-        //Debug.Log(d.GetInvocationList().ToString());
-        //for (int ctr = d.GetInvocationList().Length - 1; ctr >= 0; ctr--)
-        //{
-        //    var outputMsg = d.GetInvocationList()[ctr];
-        //    Debug.Log(outputMsg.Method);
-        //}
+        instance.eventDictionary[eventName] = delegateDictionary;
     }
-
-    //public static void StartListening(string eventName, UnityAction<GameObject> listener)
-    //{
-    //    UnityEvent<GameObject> thisEvent = null;
-
-    //    if (instance.eventDictionaryGameObject.TryGetValue(eventName, out thisEvent))
-    //    {
-    //        thisEvent.AddListener(listener);
-    //    }
-    //    else
-    //    {
-    //        thisEvent = new GameObjectUnityEvent();
-    //        thisEvent.AddListener(listener);
-    //        instance.eventDictionaryGameObject.Add(eventName, thisEvent);
-    //    }
-    //}
-
-    //public static void StopListening(string eventName, UnityAction<GameObject> listener)
-    //{
-    //    if (eventManager == null)
-    //        return;
-
-    //    UnityEvent<GameObject> thisEvent = null;
-    //    if (instance.eventDictionaryGameObject.TryGetValue(eventName, out thisEvent))
-    //    {
-    //        thisEvent.RemoveListener(listener);
-    //    }
-    //}
 
     public static void StopListening(string eventName, EventGameObject listener)
     {
-        if (eventManager == null)
+        if (mEventManager == null)
             return;
 
-        //EventGameObject thisEvent = null;
-        //if (instance.eventDictionary.TryGetValue(eventName, out thisEvent))
-        //{
-        //    thisEvent -= (listener);
-        //}
-
-        EventGameObject d;
-        if (instance.eventDictionary.TryGetValue(eventName, out d))
+        EventGameObject delegateDictionary;
+        if (instance.eventDictionary.TryGetValue(eventName, out delegateDictionary))
         {
-            d = (EventGameObject)Delegate.Remove(d, listener);
+            delegateDictionary = (EventGameObject)Delegate.Remove(delegateDictionary, listener);
 
             // If a delegate remains, set the new head else remove the EventKey
-            if (d != null)
-                instance.eventDictionary[eventName] = d;
+            if (delegateDictionary != null)
+                instance.eventDictionary[eventName] = delegateDictionary;
             else
                 instance.eventDictionary.Remove(eventName);
         }
     }
 
-    //public static void TriggerEvent(string eventName)
-    //{
-    //    UnityEvent thisEvent = null;
-    //    if (instance.eventDictionary.TryGetValue(eventName, out thisEvent))
-    //    {
-    //        thisEvent.Invoke();
-    //    }
-    //}
-
     public static void TriggerEvent(string eventName, GameObject go)
     {
-        EventGameObject thisEvent = null;
+        EventGameObject thisEvent;
         if (instance.eventDictionary.TryGetValue(eventName, out thisEvent))
         {
             thisEvent.Invoke(go);

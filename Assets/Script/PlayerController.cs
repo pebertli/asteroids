@@ -1,13 +1,18 @@
 using System.Collections;
 using UnityEngine;
 
-public class PlayerMovementController : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     public float GasAmount;
     public GameVariables Variables;
     public GameManager Manager;
     public MeshRenderer[] MaterialRocket;
+    public GameObject BulletPrefab;
+    public Transform AttackPivot;
+    public float BulletSpeed;
 
+    const float BulletCooldownMax = 0.3f;
+    float BulletCooldown = BulletCooldownMax;
     Camera mMainCamera;
     Rigidbody mRigidbody;
     float mThrottle;
@@ -20,6 +25,21 @@ public class PlayerMovementController : MonoBehaviour
     {
         mMainCamera = Camera.main;
         mRigidbody = GetComponent<Rigidbody>();
+    }
+
+    private void OnEnable()
+    {
+        EventManager.StartListening("AsteroidDestroyed", AddScore);
+    }
+
+    private void OnDisable()
+    {
+        EventManager.StopListening("AsteroidDestroyed", AddScore);
+    }
+
+    public void AddScore(GameObject s)
+    {
+        Variables.Score += GameVariables.ScoreIncrement;
     }
 
     private void FixedUpdate()
@@ -43,7 +63,6 @@ public class PlayerMovementController : MonoBehaviour
         EventManager.TriggerEvent("PlayerDestroyed", null);
         if (Variables.Health <= 0)
         {
-            //Destroy(this.gameObject);
             Manager.SetGameState(GameVariables.GameState.GameOver);
 
         }
@@ -94,11 +113,36 @@ public class PlayerMovementController : MonoBehaviour
         yield break;
     }
 
+    private void IntantiateBullet()
+    {
+        GameObject bullet = GameObject.Instantiate(BulletPrefab, AttackPivot.position, Quaternion.identity);
+        bullet.GetComponent<Rigidbody>().AddForce(this.transform.up * BulletSpeed, ForceMode.Impulse);
+    }
+
+    public void DestroyAllBullets()
+    {
+        foreach (Transform c in AttackPivot)
+        {
+            Destroy(c.gameObject);
+        }
+    }
+
     void Update()
     {
         Debug.DrawRay(transform.position, transform.up, Color.green);
         Debug.DrawRay(transform.position, transform.right, Color.red);
         Debug.DrawRay(transform.position, transform.forward, Color.blue);
+
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            if (BulletCooldown <= 0)
+            {
+                IntantiateBullet();
+                BulletCooldown = BulletCooldownMax;
+            }
+        }
+
+        BulletCooldown -= Time.deltaTime;
 
         if (InvencibleCooldown > 0)
             InvencibleCooldown -= Time.deltaTime;

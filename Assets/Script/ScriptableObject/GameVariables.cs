@@ -5,9 +5,9 @@ using UnityEngine;
 public class GameVariables : ScriptableObject
 {
     private int mScore;
+
     public int Health;
     public int AsteroidAmount;
-
     public const int MaxAsteroidAmount = 5;
     public const int InitialScore = 0;
     public const int ScoreIncrement = 100;
@@ -15,7 +15,7 @@ public class GameVariables : ScriptableObject
 
     public Action ScoreChanged = delegate { };
 
-    public int Score { get => mScore; set { mScore = value; ScoreChanged(); } }
+
 
     public enum GameState
     {
@@ -27,6 +27,7 @@ public class GameVariables : ScriptableObject
     };
 
     public GameState CurrentGameState;
+    public int Score { get => mScore; set { mScore = value; ScoreChanged(); } }
 
 
     // Start is called before the first frame update
