@@ -5,7 +5,6 @@ public class PlayerController : MonoBehaviour
 {
     public float GasAmount;
     public GameVariables Variables;
-    public GameManager Manager;
     public MeshRenderer[] MaterialRocket;
     public GameObject BulletPrefab;
     public Transform AttackPivot;
@@ -46,30 +45,6 @@ public class PlayerController : MonoBehaviour
     {
         mRigidbody.AddForce(transform.up * mThrottle, ForceMode.Acceleration);
         mRigidbody.velocity = Vector3.ClampMagnitude(mRigidbody.velocity, 2);
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.collider.CompareTag("Asteroid"))
-        {
-            if (InvencibleCooldown <= 0)
-                Damage();
-        }
-    }
-
-    void Damage()
-    {
-
-        EventManager.TriggerEvent("PlayerDestroyed", null);
-        if (Variables.Health <= 0)
-        {
-            Manager.SetGameState(GameVariables.GameState.GameOver);
-
-        }
-        else
-        {
-            Respawn(true);
-        }
     }
 
     public void Respawn(bool invencible)
