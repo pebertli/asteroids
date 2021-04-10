@@ -64,6 +64,14 @@ public class AsteroidSpawnController : MonoBehaviour
         asteroid.transform.localScale = new Vector3(scale, scale, scale);
     }
 
+    public void DestroyAllAsteroids()
+    {
+        foreach (Transform c in SpawnParent)
+            Destroy(c.gameObject);
+
+        Variables.AsteroidAmount = 0;
+    }
+
     public void AsteroidDestroyed(GameObject asteroidDestroid)
     {
         if (asteroidDestroid.transform.localScale.x >= 0.3f)
