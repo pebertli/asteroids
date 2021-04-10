@@ -94,6 +94,19 @@ public class PlayerController : MonoBehaviour
         bullet.GetComponent<Rigidbody>().AddForce(this.transform.up * BulletSpeed, ForceMode.Impulse);
     }
 
+    private void InstantiateExplosion()
+    {
+        Vector3 explosionPos = transform.position;
+        Collider[] colliders = Physics.OverlapSphere(explosionPos, 5);
+        foreach (Collider hit in colliders)
+        {
+            Rigidbody rb = hit.GetComponent<Rigidbody>();
+
+            if (rb != null)
+                rb.AddExplosionForce(1000, explosionPos, 5);
+        }
+    }
+
     public void DestroyAllBullets()
     {
         foreach (Transform c in AttackPivot)
@@ -113,6 +126,7 @@ public class PlayerController : MonoBehaviour
             if (BulletCooldown <= 0)
             {
                 IntantiateBullet();
+                //InstantiateExplosion();
                 BulletCooldown = BulletCooldownMax;
             }
         }
