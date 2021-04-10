@@ -26,3 +26,24 @@ A small project to practice Unity3D
 - Parallax effect
 
 ![session3_preview](session3.gif)
+
+## Session 4
+
+- Instantiation
+- Colliders
+- Physics manipulation
+- Prefabs
+
+![session4_preview](session4.gif)
+
+## Session 5 and 6
+
+- Observer Pattern
+- Event Manager
+- UI Text
+- UI Buttons
+- Game States
+- Time Scale Manipulation
+- Coroutines
+
+![session4_preview](session5_6.gif)
