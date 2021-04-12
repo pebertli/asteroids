@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     public GameObject BulletPrefab;
     public Transform AttackPivot;
     public float BulletSpeed;
+    public ParallaxController Background1;
 
     const float BulletCooldownMax = 0.3f;
     float BulletCooldown = BulletCooldownMax;
@@ -124,14 +125,49 @@ public class PlayerController : MonoBehaviour
     private void InstantiateExplosion()
     {
         Vector3 explosionPos = transform.position;
-        Collider[] colliders = Physics.OverlapSphere(explosionPos, 5);
+        Collider[] colliders = Physics.OverlapSphere(explosionPos, 20);
         foreach (Collider hit in colliders)
         {
-            Rigidbody rb = hit.GetComponent<Rigidbody>();
+            //Rigidbody rb = hit.GetComponent<AsteroidController>.GetComponent<Rigidbody>();
 
-            if (rb != null)
-                rb.AddExplosionForce(1000, explosionPos, 5);
+            //if (rb != null)
+            //    rb.AddExplosionForce(1000, explosionPos, 10);
+            if (hit.CompareTag("Asteroid"))
+            {
+                float delay = Vector3.Distance(hit.transform.position, transform.position) / 15;
+                hit.GetComponent<AsteroidController>().ExplosionEffect(transform.position, delay);
+            }
         }
+
+
+        RaycastHit hitRay;
+        //LayerMask mask = LayerMask.GetMask("Background");
+        // Bit shift the index of the layer (8) to get a bit mask
+        int mask = LayerMask.NameToLayer("Background");
+
+        //// This would cast rays only against colliders in layer 8.
+        //// But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
+        //layerMask = ~layerMask;
+        // Does the ray intersect any objects excluding the player layer
+        if (Physics.Raycast(transform.position, transform.forward, out hitRay, Mathf.Infinity, ~mask))
+        {
+            Vector3 offset1 = new Vector2(0.5f, 0.5f);
+            Vector3 v1 = Camera.main.WorldToViewportPoint(hitRay.point);
+            Vector3 v2 = Camera.main.WorldToViewportPoint(transform.position);
+            //Debug.Log(v2 - v1);
+            Vector3 pointVector = Background1.transform.InverseTransformPoint(hitRay.point) + offset1 + (v2 - v1);
+            Background1.AddEffect(pointVector, 1f);
+            Manager.Warpsound();
+            //Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hitRay.distance, Color.yellow);
+            //Debug.Log("Did Hit");
+        }
+        //else
+        //{
+        //    Debug.DrawRay(transform.position, transform.forward * 1000, Color.white);
+        //    Debug.Log("Did not Hit");
+        //}
+
+        //Background1.AddEffect(new Vector2(0.5f, 0.5f), 2f);
     }
 
     public void DestroyAllBullets()
@@ -157,6 +193,15 @@ public class PlayerController : MonoBehaviour
                 BulletCooldown = BulletCooldownMax;
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.A))
+            //{
+            //    if (BulletCooldown <= 0)
+            //    {
+            //IntantiateBullet();
+            InstantiateExplosion();
+        //    BulletCooldown = BulletCooldownMax;
+        //}    
 
         BulletCooldown -= Time.deltaTime;
 

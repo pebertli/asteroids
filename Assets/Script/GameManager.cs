@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -7,6 +8,7 @@ public class GameManager : MonoBehaviour
     public MainMenuController MainMenu;
     public HealthController HealthHud;
     public AsteroidSpawnController AsteroidSpawnController;
+    public GameObject BackgroundAudio;
     // Start is called before the first frame update
     void Start()
     {
@@ -44,18 +46,23 @@ public class GameManager : MonoBehaviour
                 Variables.Health = GameVariables.InitialHealth;
                 HealthHud.UpdateHealthHud();
                 //Player.DestroyAll();
+                BackgroundAudio.GetComponent<AudioSource>().Play();
                 SetGameState(GameVariables.GameState.Playing);
                 break;
             case GameVariables.GameState.Playing:
                 Time.timeScale = 1;
                 MainMenu.Show(false);
+                BackgroundAudio.GetComponent<AudioLowPassFilter>().enabled = false;
                 break;
             case GameVariables.GameState.Pause:
                 Time.timeScale = 0;
                 MainMenu.Show(true);
+                BackgroundAudio.GetComponent<AudioLowPassFilter>().enabled = true;
+                BackgroundAudio.GetComponent<AudioLowPassFilter>().cutoffFrequency = 200;
                 //MainMenuController.Show();
                 break;
             case GameVariables.GameState.GameOver:
+                BackgroundAudio.GetComponent<AudioSource>().Stop();
                 //gameObject.SetActive(false);
                 Time.timeScale = 0;
                 MainMenu.Show(true);
@@ -66,5 +73,24 @@ public class GameManager : MonoBehaviour
         }
 
         //Variables.CurrentGameState = nextGameState;
+    }
+
+    public void Warpsound()
+    {
+        StartCoroutine("easingCos");
+    }
+
+    IEnumerator easingCos()
+    {
+        BackgroundAudio.GetComponent<AudioSource>().pitch = 1.0f;
+        for (float i = 0; i < 1; i += 0.01f)
+        {
+            float res = (2 * i * Mathf.PI);
+            BackgroundAudio.GetComponent<AudioSource>().pitch = (Mathf.Cos(res) + 1f) / 2f;
+            Debug.Log(Mathf.Cos(res));
+            yield return new WaitForSeconds(0.01f);
+        }
+        BackgroundAudio.GetComponent<AudioSource>().pitch = 1.0f;
+        yield return null;
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class ParallaxController : MonoBehaviour
@@ -29,5 +30,26 @@ public class ParallaxController : MonoBehaviour
         }
 
 
+    }
+
+    public void AddEffect(Vector2 center, float duration)
+    {
+        mMeshRenderer.material.SetVector("_Center", center);
+        mMeshRenderer.material.SetInt("_Shockwave", 1);
+        StartCoroutine("CountEffect", duration);
+    }
+
+    IEnumerator CountEffect(float duration)
+    {
+        float currentDuration = 0f;
+
+        while (currentDuration < 1.0f)
+        {
+            currentDuration += Time.deltaTime * (1f / duration);
+            mMeshRenderer.material.SetFloat("_Duration", currentDuration);
+            yield return null;
+        }
+        mMeshRenderer.material.SetInt("_Shockwave", 0);
+        yield break;
     }
 }

@@ -3,9 +3,13 @@ using UnityEngine;
 public class AsteroidController : MonoBehaviour
 {
     public GameVariables Variables;
+
+    private Vector3 ExplosionPosition;
+    private Rigidbody mRigidbody;
     // Start is called before the first frame update
     void Start()
     {
+        mRigidbody = GetComponent<Rigidbody>();
         Destroy(this.gameObject, 5f);
     }
 
@@ -33,5 +37,19 @@ public class AsteroidController : MonoBehaviour
     void Update()
     {
 
+    }
+
+    public void ExplosionEffect(Vector3 pos, float delay = 0)
+    {
+        ExplosionPosition = pos;
+        Invoke("ExplosionEffect", delay);
+    }
+
+    private void ExplosionEffect()
+    {
+        //Rigidbody rb = hit.GetComponent<AsteroidController>.GetComponent<Rigidbody>();
+
+        if (mRigidbody != null)
+            mRigidbody.AddExplosionForce(1500, ExplosionPosition, 20);
     }
 }
