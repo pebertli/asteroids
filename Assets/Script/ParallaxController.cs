@@ -20,12 +20,12 @@ public class ParallaxController : MonoBehaviour
     {
         if (mPlayerRB)
         {
-            Vector2 offset = mMeshRenderer.material.mainTextureOffset;
+            Vector2 offset = mMeshRenderer.material.GetVector("_Parallax");
 
             offset.x += mPlayerRB.velocity.x / ParallaxFactor;
             offset.y += mPlayerRB.velocity.y / ParallaxFactor;
 
-            mMeshRenderer.material.mainTextureOffset = offset;
+            mMeshRenderer.material.SetVector("_Parallax", offset);
         }
 
 

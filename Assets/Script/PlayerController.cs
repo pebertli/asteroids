@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     float BulletCooldown = BulletCooldownMax;
     Camera mMainCamera;
     Rigidbody mRigidbody;
+    ParticleSystem mBurstParticle;
     float mThrottle;
     float mRotVelocity;
 
@@ -25,6 +26,7 @@ public class PlayerController : MonoBehaviour
     {
         mMainCamera = Camera.main;
         mRigidbody = GetComponent<Rigidbody>();
+        mBurstParticle = GetComponentInChildren<ParticleSystem>();
     }
 
     private void OnEnable()
@@ -175,6 +177,12 @@ public class PlayerController : MonoBehaviour
         {
             mThrottle = 0;
         }
+
+        var emission = mBurstParticle.emission;
+        emission.rateOverDistance = mThrottle * 3f;
+
+
+        //mBurstParticle.mo;
 
         Vector3 mouseDir = mMainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
         Vector3 pos = transform.position;

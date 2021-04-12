@@ -56,7 +56,7 @@ public class GameManager : MonoBehaviour
                 //MainMenuController.Show();
                 break;
             case GameVariables.GameState.GameOver:
-                gameObject.SetActive(false);
+                //gameObject.SetActive(false);
                 Time.timeScale = 0;
                 MainMenu.Show(true);
                 //MainMenuController.Show();
