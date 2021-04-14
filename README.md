@@ -46,4 +46,4 @@ A small project to practice Unity3D
 - Time Scale Manipulation
 - Coroutines
 
-![session4_preview](session5_6.gif)
+![session5_preview](session5_6.gif)

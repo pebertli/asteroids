@@ -11,6 +11,10 @@ public class PlayerController : MonoBehaviour
     public Transform AttackPivot;
     public float BulletSpeed;
     public ParallaxController Background1;
+    public ParallaxController Background2;
+    public AudioSource ThrotleAudio;
+    public AudioSource LaserAudio;
+    public AudioClip[] LaserAudioClip;
 
     const float BulletCooldownMax = 0.3f;
     float BulletCooldown = BulletCooldownMax;
@@ -157,6 +161,7 @@ public class PlayerController : MonoBehaviour
             //Debug.Log(v2 - v1);
             Vector3 pointVector = Background1.transform.InverseTransformPoint(hitRay.point) + offset1 + (v2 - v1);
             Background1.AddEffect(pointVector, 1f);
+            Background2.AddEffect(pointVector, 1f);
             Manager.Warpsound();
             //Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hitRay.distance, Color.yellow);
             //Debug.Log("Did Hit");
@@ -189,6 +194,8 @@ public class PlayerController : MonoBehaviour
             if (BulletCooldown <= 0)
             {
                 IntantiateBullet();
+                AudioClip laser = LaserAudioClip[Random.Range(0, LaserAudioClip.Length)];
+                LaserAudio.PlayOneShot(laser);
                 //InstantiateExplosion();
                 BulletCooldown = BulletCooldownMax;
             }
@@ -225,6 +232,16 @@ public class PlayerController : MonoBehaviour
 
         var emission = mBurstParticle.emission;
         emission.rateOverDistance = mThrottle * 3f;
+        ThrotleAudio.volume = mThrottle / 10f;
+        Debug.Log(mThrottle);
+        if (mThrottle > 0)
+        {
+            ThrotleAudio.mute = false;
+        }
+        else
+        {
+            ThrotleAudio.mute = true;
+        }
 
 
         //mBurstParticle.mo;

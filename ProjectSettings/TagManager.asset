@@ -16,7 +16,7 @@ TagManager:
   - PlayerBullet
   - Enemy
   - Background
-  - 
+  - Volume
   - 
   - 
   - 
@@ -42,4 +42,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Particle
+    uniqueID: 1926862315
     locked: 0

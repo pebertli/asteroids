@@ -3,9 +3,11 @@ using UnityEngine;
 public class AsteroidController : MonoBehaviour
 {
     public GameVariables Variables;
+    public AudioSource AudioDestruction;
 
     private Vector3 ExplosionPosition;
     private Rigidbody mRigidbody;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,6 +25,9 @@ public class AsteroidController : MonoBehaviour
 
     public void Damage()
     {
+        AudioDestruction.gameObject.transform.parent = null;
+        GameObject.Destroy(AudioDestruction.gameObject, 2f);
+        AudioDestruction.Play();
         EventManager.TriggerEvent("AsteroidDestroyed", this.gameObject);
         Destroy(this.gameObject);
     }
