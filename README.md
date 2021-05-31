@@ -1,6 +1,6 @@
 # Asteroids
 
-A small project to practice Unity3D
+A small project to teach Unity3D for some colleagues
 
 ## Session 1
 
